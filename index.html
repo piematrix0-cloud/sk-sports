@@ -1861,12 +1861,31 @@
             }
 
             // ========== CHECKOUT ==========
+            function buildOrderMessage() {
+                if (cart.length === 0) return '';
+                let msg = '🛒 *New Order from SK Sports Website*%0A';
+                msg += '--------------------------------%0A';
+                cart.forEach((item, index) => {
+                    msg += `${index + 1}. ${item.name}%0A   Qty: ${item.quantity} × ₹${item.price.toLocaleString()} = ₹${(item.price * item.quantity).toLocaleString()}%0A`;
+                });
+                msg += '--------------------------------%0A';
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                msg += `*Total: ₹${total.toLocaleString()}*%0A%0A`;
+                msg += 'Please confirm my order. Thank you!';
+                return msg;
+            }
+
             checkoutBtn.addEventListener('click', () => {
                 if (cart.length === 0) {
                     showToast('Your cart is empty!');
                     return;
                 }
-                showToast('🎉 Order placed successfully! Thank you!');
+                const message = buildOrderMessage();
+                const phoneNumber = '918178334296'; // WhatsApp number in international format
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+                window.open(whatsappUrl, '_blank'); // Opens WhatsApp in new tab
+                showToast('Opening WhatsApp to confirm your order...');
+                // Clear cart after redirecting
                 cart = [];
                 updateCartUI();
                 setTimeout(() => toggleCart(false), 800);
